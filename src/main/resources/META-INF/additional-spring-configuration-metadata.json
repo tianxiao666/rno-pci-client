@@ -1,0 +1,18 @@
+{
+  "properties": [
+    {
+      "name": "rno.lte.service.azimuth-evaluation",
+      "type": "java.lang.String",
+      "description": "天线方位角评估后端服务."
+    },
+    {
+      "name": "rno.lte.service.common",
+      "type": "java.lang.String",
+      "description": "后端公共服务."
+    },
+    {
+      "name": "rno.lte.service.pci-afp",
+      "type": "java.lang.String",
+      "description": "区域PCI翻频方案后端服务."
+    }
+  ] }

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>区域PCI翻频</title>
+    <link rel="stylesheet" href="lib/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/pci_afp.css">
+    <link rel="stylesheet" href="lib/datatables/1.10.16/dataTables.bootstrap.min.css">
+
+    <script src="lib/jquery/3.2.1/jquery.js"></script>
+    <script src="lib/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="lib/laydate/5.0.7/laydate.js"></script>
+    <script src="lib/datatables/1.10.16/datatables.min.js"></script>
+    <script src="lib/datatables/1.10.16/dataTables.bootstrap.min.js"></script>
+    <script src="js/pci_afp.js"></script>
+</head>
+<body>
+<!-- 提示信息 -->
+<div id="tip">
+    <div id="loading" class="loading-style" style="display: none">分析中···，请稍候</div>
+    <div id="error" class="error-style" style="display: none"></div>
+    <div id="warn" class="warn-style" style="display: none"></div>
+    <div id="info" class="info-style" style="display:none;"></div>
+    <div id="success" class="success-style" style="display: none"></div>
+</div>
+
+<!-- 功能主体 -->
+<div class="custom-div-cantainer">
+
+    <div id="mainDiv">
+        <!-- 新建任务按钮 -->
+        <button class="btn btn-primary" data-backdrop="static" data-toggle="modal"
+                data-target=".bs-modal-lg" onclick="showModal()">
+            <i class="glyphicon glyphicon-plus"> 新建任务</i>
+        </button>
+
+        <!-- 3px分割 -->
+        <div class="div-separate"></div>
+
+        <!-- 查询条件 -->
+        <div class="div-with-border">
+            <span class="span-tip">查询条件：</span>
+            <div class="div-content">
+                <form id="queryForm">
+                    <div class="form-group form-inline">
+                        <label class="col-md-2" style="text-align: right" for="cityId">所在地市</label>
+                        <select class="form-control" id="cityId" name="cityId">
+                        </select>
+                    </div>
+                    <div class="form-group form-inline">
+                        <label class="col-md-2" style="text-align: right" for="taskName">任务名称</label>
+                        <input type="text" class="form-control" id="taskName" name="taskName">
+                    </div>
+                    <div class="form-group form-inline">
+                        <label class="col-md-2" style="text-align: right" for="taskStatus">任务状态</label>
+                        <select class="form-control" id="taskStatus" name="taskStatus">
+                            <option value="ALL">全部</option>
+                            <option value="LaunchedOrRunning">运行中</option>
+                            <option value="Succeeded">正常完成</option>
+                            <option value="Fail">异常终止</option>
+                            <option value="Waiting">排队中</option>
+                            <option value="Stopping">停止中</option>
+                            <option value="Stopped">已停止</option>
+                        </select>
+                    </div>
+                    <div class="form-group form-inline">
+                        <label class="col-md-2" style="text-align: right" for="meaTime">测量时间</label>
+                        <input type="text" class="form-control" id="meaTime" name="meaTime">
+                    </div>
+                    <div class="form-group form-inline">
+                        <label class="col-md-2" style="text-align: right" for="startTime">任务提交时间</label>
+                        <input type="text" class="form-control" id="startTime" name="startSubmitTime"> 至
+                        <input title="" type="text" class="form-control" id="endTime" name="endSubmitTime">
+                    </div>
+                    <div class="form-group form-inline">
+                        <label class="col-md-offset-2"></label>
+                        <button class="btn btn-primary" id="queryBtn" type="button">
+                            <i class="glyphicon glyphicon-search"> 查询</i>
+                        </button>
+                    </div>
+                    <input type="hidden" id="account" name="account" value="liu.yp@hgicreate.com">
+                    <input type="hidden" id="jobType" name="jobType" value="RNO_PCI_AFP_PLAN">
+                </form>
+            </div>
+        </div>
+
+        <!-- 3px分割 -->
+        <div class="div-separate"></div>
+
+        <!-- 任务列表 -->
+        <div class="div-with-border">
+            <span class="span-tip">分析任务列表：</span>
+            <div class="div-content">
+                <table style="border-radius: 8px" id="taskResult"
+                       class="table table-striped table-bordered" cellspacing="0" width="100%">
+                    <thead><tr>
+                        <th>任务名称</th><th>任务状态</th><th>分析地区</th>
+                        <th>测试时间段</th><th>启动时间</th>
+                        <th>完成时间</th><th>操作</th>
+                    </tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 新建任务模态框 -->
+        <div class="modal fade bs-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="custom-div-cantainer1">
+                        <form id="newTaskForm">
+                            <!-- 任务信息 -->
+                            <div id="taskDiv">
+                                <div class="div-with-border">
+                                    <span class="span-tip">填写任务信息：</span>
+                                    <div class="div-content">
+                                        <div class="form-group form-inline">
+                                            <label class="col-sm-3" style="text-align: right" for="cityId1">地市</label>
+                                            <select class="form-control" id="cityId1" name="cityId">
+                                            </select>
+                                        </div>
+                                        <div class="form-group form-inline">
+                                            <label class="col-sm-3" style="text-align: right"
+                                                   for="taskName1">任务名称</label>
+                                            <input type="text" class="form-control" id="taskName1" name="taskName">
+                                        </div>
+                                        <div class="form-group form-inline">
+                                            <label class="col-sm-3" style="text-align: right" for="mode">计算模式</label>
+                                            <select class="form-control" id="mode" name="mode">
+                                                <option value="input">变PCI小区</option>
+                                                <option value="wholeNet">全网PCI翻频</option>
+                                            </select>
+                                        </div>
+                                        <div id="pciCellDiv" class="form-group form-inline">
+                                            <label class="col-sm-3" style="text-align: right" for="optimizeCells">变PCI小区表</label>
+                                            <textarea class="form-control" name="optimizeCells" id="optimizeCells"
+                                                      style="width:50%;height: 300px" title="变PCI小区表"></textarea>
+                                        </div>
+                                        <div class="form-group form-inline">
+                                            <label class="col-sm-3" style="text-align: right" for="config">参数选择</label>
+                                            <select class="form-control" id="config" name="config">
+                                                <option value="default">默认配置</option>
+                                                <option value="custom">自定义配置</option>
+                                            </select>
+                                        </div>
+                                        <div id="configDiv" class="form-group form-inline" style="display: none">
+                                            <label class="col-sm-3" style="text-align: right"
+                                                   for="thresholdTab">参数配置</label>
+                                            <div class="col-sm-9 div-with-border" style="margin-bottom: 13px">
+                                                <table id="thresholdTab" class="table">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>参数名</th>
+                                                        <th>默认值</th>
+                                                        <th>含义</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group form-inline">
+                                            <label class="col-sm-offset-3"></label>
+                                            <button class="btn btn-danger" id="submitBack" data-dismiss="modal"
+                                                    type="button">
+                                                <i class="glyphicon glyphicon-home"> 取消</i>
+                                            </button>
+                                            <button id="submitTask" class="btn btn-success" data-dismiss="modal"
+                                                    type="button">
+                                                <i class="glyphicon glyphicon-hand-up"> 提交</i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="account1" name="account" value="liu.yp@hgicreate.com">
+                            <input type="hidden" id="jobType1" name="jobType" value="RNO_PCI_AFP_PLAN">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="resultDiv" style="display: none">
+        <button class="btn btn-danger" style="float: right" id="downloadBtn" type="button">
+            <i class="glyphicon glyphicon-download-alt"> 导出结果</i>
+        </button>
+        <div class="div-with-border">
+            <span class="span-tip">结果列表：</span>
+            <div class="div-content">
+                <table style="border-radius: 8px" id="resultTab"
+                       class="table table-striped table-bordered" cellspacing="0" width="100%">
+                    <thead><tr>
+                        <th>小区名称</th><th>小区标识</th><th>原频点</th>
+                        <th>新频点</th><th>原PCI</th>
+                        <th>新PCI</th><th>原干扰值</th><th>新干扰值</th><th>备注</th>
+                    </tr></thead>
+                    <tbody></tbody>
+                </table>
+                <div style="text-align: center">
+                    <button class="btn btn-primary" id="resultBack" type="button">
+                        <i class="glyphicon glyphicon-home"> 返回</i>
+                    </button>
+                </div>
+                <form id="downloadResultForm">
+                    <input type="hidden" id="jobId" name="jobId" value="">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="reportDiv" style="display: none">
+        <div class="div-with-border">
+            <span class="span-tip">报告列表：</span>
+            <div style="padding: 15px">
+                <table id="reportTab" class="table">
+                    <thead>
+                    <tr>
+                        <th>阶段</th>
+                        <th>开始时间</th>
+                        <th>结束时间</th>
+                        <th>结果</th>
+                        <th>详细信息</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <!-- 3px分割 -->
+            <div class="div-separate"></div>
+
+            <div style="text-align: center">
+                <button class="btn btn-primary" id="reportBack" type="button">
+                    <i class="glyphicon glyphicon-home"> 返回</i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

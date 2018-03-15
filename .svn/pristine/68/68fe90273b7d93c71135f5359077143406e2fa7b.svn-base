@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="rno_pci@192.168.9.66" uuid="22d5aa77-237f-4f43-a35d-4031c67e2f52">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://192.168.9.66:5432/rno_pci</jdbc-url>
+    </data-source>
+  </component>
+</project>
